@@ -23,7 +23,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <ProtectedRoute requireAdmin>
-      <div className="flex min-h-[calc(100vh-64px)] bg-muted/30">
+      <div className="flex min-h-screen bg-muted/30">
         {/* Mobile sidebar backdrop */}
         {sidebarOpen && (
           <div
@@ -34,7 +34,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Sidebar */}
         <aside
-          className={`fixed bottom-0 left-0 top-[64px] z-40 w-64 transform border-r border-border bg-card transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
+          className={`fixed bottom-0 left-0 top-0 z-40 w-64 transform border-r border-border bg-card transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
