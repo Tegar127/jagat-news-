@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, FileText, Tags, Users, Settings, LogOut, Menu, X, Gift } from "lucide-react"
+import { LayoutDashboard, FileText, Tags, Users, LogOut, Menu, Gift } from "lucide-react"
 
 import { useAuth } from "@/hooks/useAuth"
 import { ProtectedRoute } from "@/components/features/auth/ProtectedRoute"
