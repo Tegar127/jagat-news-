@@ -36,7 +36,7 @@ export default function RootLayout({
       <body className={`${inter.className} min-h-screen bg-background antialiased flex flex-col`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
