@@ -67,6 +67,58 @@ export function AdminContentForm({
       reader.readAsDataURL(file)
     })
 
+  const getErrorMessage = (error: unknown) => {
+    if (error instanceof Error) return error.message
+    if (typeof error === "object" && error !== null) {
+      const message = "message" in error ? String(error.message ?? "") : ""
+      const details = "details" in error ? String(error.details ?? "") : ""
+      const hint = "hint" in error ? String(error.hint ?? "") : ""
+      return [message, details, hint].filter(Boolean).join(" | ") || "Terjadi kesalahan saat menyimpan data"
+    }
+    return "Terjadi kesalahan saat menyimpan data"
+  }
+
+  const uploadDataUrlToStorage = async (dataUrl: string, folder: "berita" | "promo") => {
+    const matchedMime = dataUrl.match(/^data:(image\/[a-zA-Z0-9+.-]+);base64,/)
+    if (!matchedMime) {
+      throw new Error("Format gambar tidak valid")
+    }
+
+    const mimeType = matchedMime[1]
+    const extension = mimeType.split("/")[1] || "jpg"
+    const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${extension}`
+    const fileBuffer = await fetch(dataUrl).then((response) => response.arrayBuffer())
+
+    const { error: uploadError } = await supabase.storage
+      .from("news-images")
+      .upload(fileName, fileBuffer, { contentType: mimeType, upsert: false })
+
+    if (uploadError) {
+      throw new Error(
+        `Upload gambar gagal. Pastikan bucket Storage "news-images" sudah dibuat dan punya policy upload. (${uploadError.message})`
+      )
+    }
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("news-images").getPublicUrl(fileName)
+
+    return publicUrl
+  }
+
+  const resolvePersistedImageUrls = async (urls: string[], folder: "berita" | "promo") => {
+    const persistedUrls: string[] = []
+    for (const url of urls) {
+      if (url.startsWith("data:image/")) {
+        const uploadedUrl = await uploadDataUrlToStorage(url, folder)
+        persistedUrls.push(uploadedUrl)
+        continue
+      }
+      persistedUrls.push(url)
+    }
+    return persistedUrls
+  }
+
   const handleImageImport = async (files: FileList | null, allowMultiple: boolean) => {
     if (!files || files.length === 0) return
 
@@ -109,6 +161,8 @@ export function AdminContentForm({
           throw new Error("Minimal satu gambar berita harus diimpor")
         }
 
+        const persistedImageUrls = await resolvePersistedImageUrls(imageUrls, "berita")
+
         if (mode === "create") {
           const { data: insertedPost, error } = await supabase
             .from("Post")
@@ -119,7 +173,7 @@ export function AdminContentForm({
 
           const { error: imageInsertError } = await supabase
             .from("Image")
-            .insert(imageUrls.map((url) => ({ postId: insertedPost.id, url })))
+            .insert(persistedImageUrls.map((url) => ({ postId: insertedPost.id, url })))
           if (imageInsertError) throw imageInsertError
         } else {
           const { error } = await supabase.from("Post").update({ title, content }).eq("id", recordId ?? "")
@@ -131,7 +185,7 @@ export function AdminContentForm({
 
             const { error: imageInsertError } = await supabase
               .from("Image")
-              .insert(imageUrls.map((url) => ({ postId: recordId, url })))
+              .insert(persistedImageUrls.map((url) => ({ postId: recordId, url })))
             if (imageInsertError) throw imageInsertError
           }
         }
@@ -142,7 +196,7 @@ export function AdminContentForm({
           throw new Error("Gambar promo wajib diisi")
         }
 
-        const promoImageUrl = imageUrls[0]
+        const [promoImageUrl] = await resolvePersistedImageUrls([imageUrls[0]], "promo")
         const promoTitle = title.trim() || initialData?.title?.trim() || "Promo Banner"
         const query =
           mode === "create"
@@ -187,8 +241,7 @@ export function AdminContentForm({
       router.push(cancelHref)
       router.refresh()
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Terjadi kesalahan saat menyimpan data"
-      toast.error(message)
+      toast.error(getErrorMessage(error))
     } finally {
       setIsSaving(false)
     }
