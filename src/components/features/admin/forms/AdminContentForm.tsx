@@ -19,7 +19,8 @@ const RichTextEditor = dynamic(
 
 interface AdminContentFormProps {
   entity: "berita" | "kategori" | "promo" | "users"
-  recordId: string
+  mode: "create" | "edit"
+  recordId?: string
   entityLabel: string
   submitLabel: string
   cancelHref: string
@@ -31,6 +32,7 @@ interface AdminContentFormProps {
 
 export function AdminContentForm({
   entity,
+  mode,
   recordId,
   entityLabel,
   submitLabel,
@@ -58,28 +60,48 @@ export function AdminContentForm({
 
     try {
       if (entity === "berita") {
-        const { error } = await supabase.from("Post").update({ title, content }).eq("id", recordId)
+        const query =
+          mode === "create"
+            ? supabase.from("Post").insert({ title, content, status: "DRAFT" })
+            : supabase.from("Post").update({ title, content }).eq("id", recordId ?? "")
+        const { error } = await query
         if (error) throw error
       }
 
       if (entity === "kategori") {
-        const { error } = await supabase
-          .from("Category")
-          .update({ name: title, slug: slugify(title) })
-          .eq("id", recordId)
+        const query =
+          mode === "create"
+            ? supabase.from("Category").insert({ name: title, slug: slugify(title) })
+            : supabase
+                .from("Category")
+                .update({ name: title, slug: slugify(title) })
+                .eq("id", recordId ?? "")
+        const { error } = await query
         if (error) throw error
       }
 
       if (entity === "promo") {
-        const { error } = await supabase
-          .from("Promo")
-          .update({ title, subtitle: htmlToText(content) })
-          .eq("id", recordId)
+        const query =
+          mode === "create"
+            ? supabase.from("Promo").insert({
+                title,
+                subtitle: htmlToText(content),
+                isActive: true,
+              })
+            : supabase
+                .from("Promo")
+                .update({ title, subtitle: htmlToText(content) })
+                .eq("id", recordId ?? "")
+        const { error } = await query
         if (error) throw error
       }
 
       if (entity === "users") {
-        const { error } = await supabase.from("User").update({ name: title }).eq("id", recordId)
+        const query =
+          mode === "create"
+            ? supabase.from("User").insert({ name: title, email: content, role: "USER" })
+            : supabase.from("User").update({ name: title }).eq("id", recordId ?? "")
+        const { error } = await query
         if (error) throw error
       }
 

@@ -23,6 +23,7 @@ export default async function EditPromoPage({ params }: EditPromoPageProps) {
       </div>
       <AdminContentForm
         entity="promo"
+        mode="edit"
         recordId={promo.id}
         entityLabel="Promo"
         submitLabel="Perbarui Promo"

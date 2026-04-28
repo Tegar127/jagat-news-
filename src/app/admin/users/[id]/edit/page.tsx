@@ -1,4 +1,4 @@
-import { AdminContentForm } from "@/components/features/admin/forms/AdminContentForm"
+import { AdminUserForm } from "@/components/features/admin/forms/AdminUserForm"
 import { createClient } from "@/lib/supabase/server"
 import { notFound } from "next/navigation"
 
@@ -21,15 +21,14 @@ export default async function EditUserPage({ params }: EditUserPageProps) {
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Edit Pengguna</h1>
         <p className="mt-2 text-muted-foreground">ID pengguna: {id}</p>
       </div>
-      <AdminContentForm
-        entity="users"
-        recordId={user.id}
-        entityLabel="Pengguna"
-        submitLabel="Perbarui Pengguna"
+      <AdminUserForm
+        mode="edit"
+        userId={user.id}
         cancelHref="/admin/users"
         initialData={{
-          title: user.name ?? "",
-          content: `<p>Role: ${user.role ?? "-"}<br/>Email: ${user.email ?? "-"}</p>`,
+          name: user.name ?? "",
+          email: user.email ?? "",
+          role: (user.role ?? "USER") as "USER" | "ADMIN" | "ADMINISTRATOR",
         }}
       />
     </section>

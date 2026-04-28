@@ -29,6 +29,9 @@ export default async function AdminBeritaPage() {
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Kelola Berita</h1>
         <p className="mt-2 text-muted-foreground">Pilih berita untuk diedit dengan editor konten.</p>
       </div>
+      <Button asChild>
+        <Link href="/admin/berita/create">Tambah Berita</Link>
+      </Button>
 
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <div className="space-y-4">

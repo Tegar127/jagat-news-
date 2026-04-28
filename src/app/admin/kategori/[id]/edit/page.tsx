@@ -23,6 +23,7 @@ export default async function EditKategoriPage({ params }: EditKategoriPageProps
       </div>
       <AdminContentForm
         entity="kategori"
+        mode="edit"
         recordId={kategori.id}
         entityLabel="Kategori"
         submitLabel="Perbarui Kategori"

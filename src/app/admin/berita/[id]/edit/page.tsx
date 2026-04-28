@@ -23,6 +23,7 @@ export default async function EditBeritaPage({ params }: EditBeritaPageProps) {
       </div>
       <AdminContentForm
         entity="berita"
+        mode="edit"
         recordId={berita.id}
         entityLabel="Berita"
         submitLabel="Perbarui Berita"

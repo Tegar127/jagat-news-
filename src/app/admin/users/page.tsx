@@ -25,6 +25,9 @@ export default async function AdminUsersPage() {
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Kelola Pengguna</h1>
         <p className="mt-2 text-muted-foreground">Pilih pengguna untuk mengubah data profil atau catatan internal.</p>
       </div>
+      <Button asChild>
+        <Link href="/admin/users/create">Tambah Pengguna</Link>
+      </Button>
 
       <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
         <div className="space-y-4">
