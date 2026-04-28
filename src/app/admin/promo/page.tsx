@@ -27,7 +27,7 @@ export default async function AdminPromoPage() {
     <section className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Kelola Promo Banner</h1>
-        <p className="mt-2 text-muted-foreground">Kelola teks promosi banner dengan rich text editor.</p>
+        <p className="mt-2 text-muted-foreground">Kelola promo banner berbasis gambar untuk slideshow beranda.</p>
       </div>
       <Button asChild>
         <Link href="/admin/promo/create">Tambah Promo</Link>

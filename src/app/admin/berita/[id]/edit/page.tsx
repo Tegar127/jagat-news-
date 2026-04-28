@@ -9,7 +9,11 @@ interface EditBeritaPageProps {
 export default async function EditBeritaPage({ params }: EditBeritaPageProps) {
   const { id } = await params
   const supabase = await createClient()
-  const { data: berita } = await supabase.from("Post").select("id, title, content").eq("id", id).single()
+  const { data: berita } = await supabase
+    .from("Post")
+    .select("id, title, content, images:Image(url)")
+    .eq("id", id)
+    .single()
 
   if (!berita) {
     notFound()
@@ -32,6 +36,7 @@ export default async function EditBeritaPage({ params }: EditBeritaPageProps) {
           title: berita.title ?? "",
           content: berita.content ?? "",
         }}
+        initialImageUrls={berita.images?.map((image) => image.url) ?? []}
       />
     </section>
   )

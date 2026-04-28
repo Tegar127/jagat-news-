@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation"
 import Link from "next/link"
-import Image from "next/image"
 import { ArrowLeft, Calendar, User, MessageSquare } from "lucide-react"
 
 import { createClient } from "@/lib/supabase/server"
 import { stripHtml, formatDate } from "@/lib/utils"
 import { Badge } from "@/components/ui/Badge"
 import { CommentsSectionClient } from "@/components/features/comments/CommentsSectionClient"
+import { NewsImageSlider } from "@/components/features/news/NewsImageSlider"
 
 // Revalidate every 60 seconds
 export const revalidate = 60
@@ -76,19 +76,7 @@ export default async function BeritaDetailPage(props: { params: Promise<{ id: st
           <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-lg">
             {/* Image Gallery / Hero Image */}
             <div className="relative aspect-video w-full bg-muted">
-              {news.images && news.images.length > 0 ? (
-                <Image
-                  src={news.images[0].url}
-                  alt={news.title}
-                  fill
-                  priority
-                  className="object-cover"
-                />
-              ) : (
-                <div className="flex h-full items-center justify-center">
-                  <span className="text-muted-foreground">Tidak ada gambar</span>
-                </div>
-              )}
+              <NewsImageSlider images={news.images ?? []} title={news.title} />
             </div>
 
             <div className="p-8 md:p-12">

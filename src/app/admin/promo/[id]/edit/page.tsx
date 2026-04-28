@@ -9,7 +9,11 @@ interface EditPromoPageProps {
 export default async function EditPromoPage({ params }: EditPromoPageProps) {
   const { id } = await params
   const supabase = await createClient()
-  const { data: promo } = await supabase.from("Promo").select("id, title, subtitle").eq("id", id).single()
+  const { data: promo } = await supabase
+    .from("Promo")
+    .select("id, title, imageUrl")
+    .eq("id", id)
+    .single()
 
   if (!promo) {
     notFound()
@@ -30,8 +34,9 @@ export default async function EditPromoPage({ params }: EditPromoPageProps) {
         cancelHref="/admin/promo"
         initialData={{
           title: promo.title ?? "",
-          content: promo.subtitle ? `<p>${promo.subtitle}</p>` : "",
+          content: "",
         }}
+        initialImageUrls={promo.imageUrl ? [promo.imageUrl] : []}
       />
     </section>
   )

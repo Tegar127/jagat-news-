@@ -14,6 +14,7 @@ export default function CreateBeritaPage() {
         submitLabel="Simpan Berita"
         cancelHref="/admin/berita"
         initialData={{ title: "", content: "" }}
+        initialImageUrls={[]}
       />
     </section>
   )

@@ -5,7 +5,7 @@ export default function CreatePromoPage() {
     <section className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Tambah Promo Banner</h1>
-        <p className="mt-2 text-muted-foreground">Buat konten promo baru untuk ditampilkan di beranda.</p>
+        <p className="mt-2 text-muted-foreground">Upload satu gambar promo untuk ditampilkan di beranda.</p>
       </div>
       <AdminContentForm
         entity="promo"
@@ -14,6 +14,7 @@ export default function CreatePromoPage() {
         submitLabel="Simpan Promo"
         cancelHref="/admin/promo"
         initialData={{ title: "", content: "" }}
+        initialImageUrls={[]}
       />
     </section>
   )
