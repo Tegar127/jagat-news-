@@ -14,7 +14,7 @@ export function RichTextEditor({ value, onChange }: RichTextEditorProps) {
       <CKEditor
         // CKEditor package types are currently mismatched with this project setup.
         // Runtime works correctly; this cast avoids a false-negative type error.
-        // @ts-expect-error
+        // @ts-expect-error CKEditor build type is incompatible with wrapper type in this setup.
         editor={ClassicEditor}
         data={value}
         onChange={(_, editor) => {

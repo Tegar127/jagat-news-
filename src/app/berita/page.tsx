@@ -29,7 +29,7 @@ export default async function BeritaPage(props: {
     query = query.ilike("category.name", `%${categoryFilter}%`)
   }
 
-  const { data: allNews, error } = await query
+  const { data: allNews } = await query
 
   // If error or category not found, allNews might be null.
   const news = allNews || []

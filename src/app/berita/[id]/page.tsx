@@ -6,8 +6,7 @@ import { ArrowLeft, Calendar, User, MessageSquare } from "lucide-react"
 import { createClient } from "@/lib/supabase/server"
 import { stripHtml, formatDate } from "@/lib/utils"
 import { Badge } from "@/components/ui/Badge"
-import { CommentForm } from "@/components/features/comments/CommentForm"
-import { CommentList } from "@/components/features/comments/CommentList"
+import { CommentsSectionClient } from "@/components/features/comments/CommentsSectionClient"
 
 // Revalidate every 60 seconds
 export const revalidate = 60
@@ -37,17 +36,6 @@ export async function generateMetadata(props: { params: Promise<{ id: string }> 
   }
 }
 
-// Separate component for comments section to handle client-side interactivity if needed
-function CommentsSection({ postId, comments }: { postId: string, comments: any[] }) {
-  // We can pass initial comments, but since CommentList fetches them on the client
-  // We'll let CommentList handle it. Wait, the old code fetched comments on the client.
-  // Actually, Server Components can fetch initial comments and pass them down,
-  // but to keep it simple and match the old React implementation's interactivity,
-  // we'll just render a wrapper. 
-  // Oh wait, `CommentList` needs to fetch. I need to update `CommentList` to handle its own fetch or pass it here.
-  return null;
-}
-
 export default async function BeritaDetailPage(props: { params: Promise<{ id: string }> }) {
   const params = await props.params
   const supabase = await createClient()
@@ -68,13 +56,6 @@ export default async function BeritaDetailPage(props: { params: Promise<{ id: st
   if (error || !news) {
     notFound()
   }
-
-  // Fetch comments initially on server
-  const { data: initialComments } = await supabase
-    .from("Comment")
-    .select("*, User(name, avatar)")
-    .eq("postId", params.id)
-    .order("created_at", { ascending: false })
 
   const canCopyClass = news.canBeCopied ? "" : "select-none"
 
@@ -155,10 +136,6 @@ export default async function BeritaDetailPage(props: { params: Promise<{ id: st
                 <MessageSquare className="text-blue-600 dark:text-blue-400" />
                 Komentar
               </h2>
-              {/* Note: I'll use a wrapper component here to hold state, but for now let's just 
-                  use a Client Component that fetches its own data to be fully identical to old logic. 
-                  Wait, I need a wrapper component that uses `CommentForm` and `CommentList` together 
-                  and manages the `fetchComments` state. Let's create `CommentsSection.tsx`. */}
               <CommentsSectionClient postId={params.id} />
            </div>
         </div>
@@ -166,7 +143,3 @@ export default async function BeritaDetailPage(props: { params: Promise<{ id: st
     </div>
   )
 }
-
-// For simplicity, I'll inline the Client Component for the comments section here
-// In a real large app, this would be in its own file.
-import { CommentsSectionClient } from "@/components/features/comments/CommentsSectionClient"

@@ -1,7 +1,19 @@
 import Link from "next/link"
+import { revalidatePath } from "next/cache"
 
 import { Button } from "@/components/ui/Button"
 import { createClient } from "@/lib/supabase/server"
+
+async function deletePromo(formData: FormData) {
+  "use server"
+
+  const id = String(formData.get("id") ?? "")
+  if (!id) return
+
+  const supabase = await createClient()
+  await supabase.from("Promo").delete().eq("id", id)
+  revalidatePath("/admin/promo")
+}
 
 export default async function AdminPromoPage() {
   const supabase = await createClient()
@@ -29,9 +41,17 @@ export default async function AdminPromoPage() {
                 <p className="font-medium text-foreground">{item.title}</p>
                 <p className="text-sm text-muted-foreground">Status: {item.isActive ? "Aktif" : "Nonaktif"}</p>
               </div>
-              <Button asChild>
-                <Link href={`/admin/promo/${item.id}/edit`}>Edit</Link>
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button asChild>
+                  <Link href={`/admin/promo/${item.id}/edit`}>Edit</Link>
+                </Button>
+                <form action={deletePromo}>
+                  <input type="hidden" name="id" value={item.id} />
+                  <Button type="submit" variant="destructive">
+                    Hapus
+                  </Button>
+                </form>
+              </div>
             </div>
           ))}
         </div>
